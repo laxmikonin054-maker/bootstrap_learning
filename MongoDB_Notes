@@ -1,0 +1,505 @@
+What is MongoDB?
+	MongoDB is a NoSQL, document-oriented database.
+It stores data in JSON-like documents (BSON) instead of rows & columns.
+	Best for: modern web apps, real-time apps, large & flexible data.
+
+    Core Concepts & Terms
+•	Database: A physical container for collections.
+•	Collection: A group of MongoDB documents (equivalent to a Table in SQL).
+•	Document: A record in a MongoDB collection (equivalent to a Row in SQL).
+•	Field: A key-value pair in a document (equivalent to a Column in SQL).
+•	BSON: Data is stored in Binary JSON, which supports more data types (like Date and Binary) than standard JSON.
+
+
+Key Features of MongoDB
+Feature	Explanation
+Document-based	Data stored as documents (JSON format)
+Schema-less	No fixed table structure
+High Performance	Fast reads & writes
+Scalable	Horizontal scaling (Sharding)
+Flexible	Easy to add new fields
+Cloud-ready	Works great with microservices
+
+
+
+
+
+
+
+Example MongoDB Document:
+{
+  "id": 1,
+  "flight_code": "AI101",
+  "airline_name": "Air India",
+  "source": "Delhi",
+  "destination": "Mumbai",
+  "fare": 4500,
+  "duration": 120
+}
+
+
+
+Feature	MongoDB (NoSQL)	MySQL (SQL)
+Type	NoSQL (Document DB)	Relational (SQL DB)
+Structure	JSON Documents	Tables (Rows/Columns)
+Schema	Dynamic (Flexible)	Fixed (Strict)
+Scaling	Horizontal (Sharding)	Vertical (Add RAM/CPU)
+Joins	Limited (via Aggregation)	Powerful JOINs
+Transactions	Supported (multi-document)	Fully Supported
+Speed	Very fast for big data	Fast for relational queries
+Best For	Web apps, APIs, big data	Banking, ERP, reporting
+Learning Curve	Easy for JS devs	SQL syntax required
+
+Operation	MongoDB	MySQL
+Create	insertOne()	INSERT INTO
+Read	find()	SELECT
+Update	updateOne()	UPDATE
+Delete	deleteOne()	DELETE
+
+When to Use MongoDB?
+Use MongoDB if:
+•	Data structure changes often
+•	Building APIs / MERN stack
+•	Large & unstructured data
+•	High-speed writes
+When to Use MySQL?
+
+Use MySQL if:
+•	Strong relationships needed
+•	Transactions are critical (banking)
+•	Reporting & joins required
+•	Fixed schema systems
+
+
+•	MongoDB is schema-less NoSQL document DB
+•	 MySQL is structured relational SQL DB
+•	MongoDB scales horizontally, MySQL mainly vertically
+•	MongoDB fits modern web apps, MySQL fits enterprise systems
+
+===========================================================
+Install MongoDB Server (Database)
+ Download: MongoDB from website.
+During install:
+✔ Select Complete
+✔ Enable Install MongoDB as a Service
+Verify:
+mongod --version
+
+If you are getting this error C:\Windows\System32>mongod --version 'mongod' is not recognized as an internal or external command, operable program or batch file.
+It just means MongoDB is installed but not added to PATH, so Windows can’t find mongod.
+Fix it step-by-step:
+Step 1: Confirm MongoDB Is Installed
+Check if MongoDB exists on your system:
+Go to:
+C:\Program Files\MongoDB\Server\
+You should see a folder like:
+8.0
+7.0
+6.0
+Then open:
+C:\Program Files\MongoDB\Server\<version>\bin
+You should see:
+mongod.exe
+mongosh.exe
+If this folder does NOT exist → MongoDB is not installed.
+Download and install from: MongoDB
+(Choose Complete install + “Install MongoDB as a Service” ✔)
+Step 2: Add MongoDB to PATH (Fix for Your Error)
+      2.1 Copy MongoDB bin path
+        Example (your version may differ):
+     C:\Program Files\MongoDB\Server\8.0\bin
+    Add to PATH
+1.	Press Windows + R
+2.	Type:     sysdm.cpl
+3.	Go to Advanced tab → Environment Variables
+4.	Under System variables → select Path → Edit
+5.	Click New → paste:
+C:\Program Files\MongoDB\Server\8.0\bin
+6.	Click OK → OK → OK
+Restart Command Prompt (important!)
+Step 3: Verify MongoDB Works Now
+Open a new Command Prompt:
+mongod --version
+mongosh
+Expected:
+db version v8.x.x
+And mongosh should open Mongo shell.
+
+Step 4: Start MongoDB Service (If Needed)
+MongoDB usually runs as a Windows service. Check:
+services.msc
+Look for:
+MongoDB Server
+If stopped → Right click → Start
+
+If You Get: "Service not started"
+Run manually:
+mongod
+If it complains about db path, create folder:
+mkdir C:\data\db
+mongod --dbpath C:\data\db
+________________________________________
+--------------------------------------------------------------------
+
+
+Workflow:
+MongoDB workflow starts with mongosh:  Start Mongo Shell :
+(selects a database using use, enforces uniqueness with  createIndex, performs CRUD using insert, find, update, delete, and ends with exit)
+Open  command prompt or Powershell 
+Type :   
+1.	Start Mongo Shell :
+C:\Windows\System32 > mongosh
+ 
+
+ If MongoDB is installed properly, you will see the prompt:
+ 	test>
+2.	   Display available default dbs.
+ test>show dbs
+All DBs will be displayed.
+admin   40.00 KiB
+config  12.00 KiB
+local   40.00 KiB
+default dbs 
+
+	
+
+3.	Select or Create Database:
+test> use flightdb
+     	This will either selects “flightdb” if it exists or creates new db.
+           Now List All Databases:
+            flightdb >   show dbs      
+             (You’ll see flighdb after at least one insert)
+
+********************************
+Database Naming Rules (Best Practices)
+1.	Use lowercase
+Ex.   flightdb
+        userdb
+        bookingdb
+(Why: Some OS/tools are case-sensitive; lowercase avoids weird issues.)
+2.	No spaces, no special characters Allowed
+flightdb
+flight_app   (underscore ok, but not preferred)
+3.	Environment-based naming (for real projects)
+flightdb_dev
+flightdb_test
+flightdb_prod
+	  This is how real teams manage multiple environments.
+             =======================================================
+             Collection Naming Rules (Best Practices)
+           1. Use plural nouns (industry standard), lower case only
+      	     Ex:  flights , users, bookings, payments
+     	     (Reason: Collection represents multiple records.)
+      	     
+               2. Lowercase only
+	   Flights ,flight_bookings
+     	         Avoid: Flights, FlightBookings 
+                  3. Snake_case for multi-word collections
+                   Ex:   flight_bookings , airline_staff
+                   Avoid : flightBookings, FlightBookings
+
+              4. Avoid technical or temp names
+                  Avoid : data1, test, temp, new_collection, mytable
+                  Use meaningful domain names:
+	     Ex:flights
+		airlines
+		airports
+		bookings
+	**************************************
+
+         4> Create flights Collection
+                flightdb > db.createCollection("buses")
+               It will show the below lines.
+flightdb> db.createCollection("flights")
+{ ok: 1 }
+flightdb>
+          
+        5.  List collections: 
+
+    flightdb > show collections
+
+
+it will show flights.
+flights
+
+6.    Insert:
+        This inserts one record in flight collection (Without Constraints)
+                   Insert One Flight : Inserts a new flight document into the flights collection.
+                 flightdb > db.flights.insertOne({
+  id: 1,
+  bus_code: "AI101",
+  bus_name: "Air India",
+  source: "Bangalore",
+  destination: "Delhi",
+  fare: 5500,
+  duration: "2h 30m"
+})
+
+                             ******************************************************************
+MongoDB  Constraints
+MongoDB is schema-flexible, but we can enforce constraints at the collection level. 
+The real constraints (validation, required fields, uniqueness) in MongoDB using mongosh.
+
+               Types of Constraints we can apply
+Constraint Type	Purpose
+Required fields	Prevent missing fields
+Data type	Ensure correct types
+Enum values	Limit allowed values
+Min/Max	Control numeric range
+Unique	Prevent duplicate values
+Custom rules	Business rules
+
+
+
+   Create Collection with Schema Validation (Constraints)
+We can enforce required fields + types + value rules while creating flights collection:
+flightdb > db.createCollection("flights1", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["id", "flight_code", "flight_name", "source","destination", 
+                "fare", "duration"],
+      properties: {
+        id: {
+          bsonType: "int",
+          description: "must be an integer and is required"
+        },
+        flight_code: {
+          bsonType: "string",
+          description: "must be a string and is required"
+        },
+        airline_name: {
+          bsonType: "string",
+          description: "must be a string and is required"
+        },
+        source: {
+          bsonType: "string",
+          description: "must be a string and is required"
+        },
+        destination: {
+          bsonType: "string",
+          description: "must be a string and is required"
+        },
+        fare: {
+          bsonType: "int",
+          minimum: 1000,
+          description: "must be >= 1000"
+        },
+        duration: {
+          bsonType: "string",
+          description: "must be a string like '2h 30m'"
+        }
+      }
+    }
+  },
+  validationLevel: "strict",
+  validationAction: "error"
+})
+----------------------------------------------------------------
+Now MongoDB will reject bad inserts/updates.
+Example: Invalid Insert (Will Fail)
+flightdb > db.flights.insertOne({
+  id: 1,
+  flight_code: "AI101",
+  airline_name: "Air India",
+  source: "Bangalore",
+  destination: "Delhi"
+})
+
+MongoServerError: Document failed validation
+Additional information: {
+  failingDocumentId: ObjectId('699155ead885212b5d7c2907'),
+  details: {
+    operatorName: '$jsonSchema',
+Error because fare and duration are missing !!!!!!!!!!!!!!!!
+________________________________________
+2. Unique Constraint (Like PRIMARY KEY / UNIQUE)
+MongoDB doesn’t support unique constraints inside schema validator, so we create unique indexes .
+Make the id field unique so that duplicate IDs are not allowed.
+       // Custom Unique Field
+      flightdb> db.flights.createIndex({ id: 1 }, { unique: true });
+        It returns:  id_1
+Now try to insert with duplicate id, it will give the below error:
+MongoServerError: E11000 duplicate key error collection: flightdb.flights index: id_1 dup key: { id: 3 }
+▶ Make flight_code unique
+flightdb > db.flights.createIndex({ flight_code: 1 }, { unique: true })
+Duplicate insert now fails:
+flightdb > db.flights.insertOne({
+ id: 1,
+  flight_code: "AI101",
+  airline_name: "Air India",
+  source: "Bangalore",
+  destination: "Delhi",
+  fare: 5500,
+  duration: "2h 30m"
+             })
+Error: duplicate key.
+________________________________________
+3. Add Constraints to Existing Collection
+If flights already exists, modify validator:
+flightdb > db.runCommand({
+  collMod: "flights",
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["id", "flight_code", "airline_name", "source","destination",    
+                  "fare", "duration"],
+      properties: {
+        id: { bsonType: "int" },
+        flight_code: { bsonType: "string" },
+        airline_name: { bsonType: "string" },
+        source: { bsonType: "string" },
+        destination: { bsonType: "string" },
+        fare: { bsonType: "int", minimum: 1000 },
+        duration: { bsonType: "string" }
+      }
+    }
+  },
+  validationLevel: "strict",
+  validationAction: "error"
+})
+________________________________________ 4. Valid Insert Example (Passes Constraints)
+flightdb > db.flights.insertOne({
+  id: 1,
+  flight_code: "AI101",
+  airline_name: "Air India",
+  source: "Bangalore",
+  destination: "Delhi",
+  fare: 5500,
+  duration: "2h 30m"
+})
+________________________________________
+ Important Real-World Notes
+SQL Concept	MongoDB Equivalent
+PRIMARY KEY	_id field (auto unique)
+NOT NULL	required in validator
+UNIQUE	Unique index
+CHECK	$jsonSchema validator
+FOREIGN KEY	Application-level reference
+	MongoDB enforces structure.
+	Spring Boot enforces business rules (validation annotations).
+============================================================================
+
+Things You Should NEVER Do
+Bad Practice	Why
+Use uppercase DB names	Can break on Linux servers
+Use spaces	Causes shell & URI issues
+Change collection names randomly	Breaks APIs
+Prefix collections with tbl_	Old SQL habit
+Use reserved names like admin, local	MongoDB system DBs
+________________________________________
+=============================================================================
+5. Insert Many Flights !!!!!!!!!
+     flightdb> db.flights.insertMany([
+  {
+   	    id: 2,
+    flight_code: "IND202",
+    airline_name: "IndiGo",
+    source: "Mumbai",
+    		   destination: "Chennai",
+   		 fare: 4200,
+    		duration: "1h 50m"
+  	},
+  	{
+id: 3,
+flight_code: "VT303",
+    		airline_name: "Vistara",
+    		source: "Hyderabad",
+    		destination: "Pune",
+    		fare: 4800,
+    		duration: "1h 20m"
+  	}
+]);
+-------------------------------------------------------
+
+
+
+6. List the inserted records in flights collection: find()
+      flightdb> db.flights.find()
+        Show All Flights. Displays all flight records stored in the collection.
+
+         A. Find by ID // retrieves the flight record whose id is 1
+               flightdb> db.flights.findOne({ id: 1 })
+
+            B.    flightdb> db.flights.find().pretty()
+           [The core difference is in how the results are displayed in the mongosh shell. 
+•	db.flights.find() returns data in a dense, compact format, which is efficient for 
+       machine parsing but hard for a human to read.
+•	      db.flights.find().pretty() uses a cursor method to format the output into a  
+         readable, structured JSON format with proper indentation and line breaks,    
+         making it easier for users to examine the documents. ]
+     
+       C. Find by Source:
+                   flightdb>  db.flights.find({ source: "Mumbai" })
+
+      D. Fare Less Than 5000
+             flightdb>  db.flights.find({ fare: { $lt: 5000 } })
+
+----------------------------------------------------------
+=====================================================
+7.	Update collection record:
+
+
+A.	 Update Fare : updates the fare of the flight whose id is 1
+
+         flightdb> db.flights.updateOne(
+     { id: 1 },
+     {$set: {fare:6000}}
+ );
+
+B.	 Increase Fare for All
+                   flightdb> db.flights.updateMany(
+                                          				{},
+                                         				 { $inc: { fare: 300 } }
+                                   			        );
+
+C.	 Change Destination
+                        flightdb> db.flights.updateOne(
+                                       		{ flight_code: "AIR09E34" },
+                                       		{ $set: { destination: "Goa" } }
+                                 		     );
+
+=========================================================9. Count Records
+       flightdb>  db.flights.countDocuments();
+
+
+10. Delete collection record:
+            a) Delete one: deletes the flight record whose id is 3
+       flightdb> db.flights.deleteOne({ id: 3 });
+          b)	Delete Many: deletes all records whose source is “Mumbai”.
+         flightdb> db.flights.deleteMany({ source: "Mumbai" });
+=============================================================================
+
+11. How to delete collection in MongoDB?
+    To delete a collection in MongoDB, you use the drop() method in mongosh
+
+   flightdb> db.flights.drop()
+=============================================================================
+12. How to delete database from mongo shell?
+To delete a database in MongoDB, use the db.dropDatabase() command in the mongosh shell after switching to the target database with the use command. This action permanently removes the database along with all its collections and documents and cannot be undone, so exercise caution.
+Steps to Delete a Database via mongosh
+1.	Open your terminal or command prompt and connect to your MongoDB instance by typing mongosh.
+2.	List existing databases to ensure you know the exact name of the one you want to delete:
+show dbs
+(or show databases).
+3.	Switch to the target database using the use <database_name> command. For example, to delete a database named userDB:
+use userDB
+The shell will confirm that you have switched to the specified database.
+4.	Execute the drop command:
+db.dropDatabase()
+MongoDB will return a confirmation message upon successful deletion, for example: {"dropped": "userDB", "ok": 1}.
+5.	Verify the deletion by listing the databases again:
+show dbs
+The deleted database will no longer appear in the list. 
+Stack Overflow +4
+Important Considerations
+•	Irreversible Operation: Deleting a database is a permanent operation. Always ensure you have a backup of any data you might need in the future.
+•	Current Database: The db.dropDatabase() command drops the currently selected database. Using the use command beforehand is crucial to avoid accidentally deleting the wrong database (or the default test database if none is selected).
+•	Permissions: You must have the necessary administrative privileges to drop a database.
+•	Other Methods: Databases can also be dropped using client drivers (e.g., Python's drop_database() method) or the MongoDB Compass GUI, which offers a "trash can" icon for deletion
+===========================================
+
+12. How to exit from mongo shell :
+	
+    flightdb>Exit
+========================================================================
